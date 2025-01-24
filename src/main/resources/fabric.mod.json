@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "hot-potato",
+	"version": "${version}",
+	"name": "hot-potato",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Thorminate"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/hot-potato/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.thorminate.hotpotato.HotPotato"
+		],
+		"fabric-datagen": [
+			"net.thorminate.hotpotato.HotPotatoDataGenerator"
+		],
+		"client": [
+			"net.thorminate.hotpotato.HotPotatoClient"
+		]
+	},
+	"mixins": [
+		"hot-potato.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
