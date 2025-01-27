@@ -3,13 +3,14 @@
 	"id": "hot-potato",
 	"version": "${version}",
 	"name": "hot-potato",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Adds a simple Hot Potato game mode that can be activated using \"/starthotpotato\"",
 	"authors": [
 		"Thorminate"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/thorminate",
+		"issues": "https://github.com/thorminate/Hot-Potato/issues",
+		"sources": "https://github.com/thorminate/Hot-Potato"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/hot-potato/icon.png",
@@ -19,10 +20,10 @@
 			"net.thorminate.hotpotato.HotPotato"
 		],
 		"fabric-datagen": [
-			"net.thorminate.hotpotato.HotPotatoDataGenerator"
+			"net.thorminate.hotpotato.dataGen.HotPotatoDataGenerator"
 		],
 		"client": [
-			"net.thorminate.hotpotato.HotPotatoClient"
+			"net.thorminate.hotpotato.client.HotPotatoClient"
 		]
 	},
 	"mixins": [
