@@ -14,6 +14,11 @@
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/hot-potato/icon.png",
+	"client": {
+		"dependencies": {
+			"cloth-config-fabric": "*"
+		}
+	},
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -24,6 +29,9 @@
 		],
 		"client": [
 			"net.thorminate.hotpotato.client.HotPotatoClient"
+		],
+		"modmenu": [
+			"net.thorminate.hotpotato.client.config.HotPotatoModMenu"
 		]
 	},
 	"mixins": [
@@ -36,6 +44,12 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"another-mod": "*"
+		"modmenu": "*",
+		"cloth-config-fabric": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"api": true
+		}
 	}
 }

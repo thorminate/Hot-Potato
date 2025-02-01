@@ -7,13 +7,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
-import net.thorminate.hotpotato.common.HotPotatoIndex;
+import net.thorminate.hotpotato.server.HotPotatoGame;
 
 import static net.minecraft.text.Text.literal;
 
 public class HotPotatoStopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("stophotpotato")
+        dispatcher.register(CommandManager.literal("stop-hot-potato")
                 .requires(source -> source.hasPermissionLevel(2)) // Admin-level permission
                 .executes(HotPotatoStopCommand::stopGame));
     }
@@ -21,7 +21,7 @@ public class HotPotatoStopCommand {
     private static int stopGame(CommandContext<ServerCommandSource> context) {
         MinecraftServer server = context.getSource().getServer();
 
-        boolean gameStopStatus = HotPotatoIndex.stopHotPotato(server);
+        boolean gameStopStatus = HotPotatoGame.stopHotPotato(server);
 
         if (gameStopStatus) {
             context.getSource().sendFeedback(() -> literal("Hot potato stopped!").formatted(Formatting.DARK_GREEN), true);

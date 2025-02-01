@@ -1,22 +1,33 @@
 package net.thorminate.hotpotato.client;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.loader.api.FabricLoader;
+import net.thorminate.hotpotato.client.config.HotPotatoConfig;
+import net.thorminate.hotpotato.client.config.HotPotatoModMenu;
 import net.thorminate.hotpotato.client.hud.HotPotatoHud;
-import net.thorminate.hotpotato.common.HotPotatoIndex;
-import net.thorminate.hotpotato.network.HotPotatoPayload;
+import net.thorminate.hotpotato.client.keybind.HotPotatoKeybinds;
+import net.thorminate.hotpotato.client.network.RequestHotPotatoPayload;
+import net.thorminate.hotpotato.client.storage.HotPotatoClientStorage;
+import net.thorminate.hotpotato.server.network.HotPotatoPayload;
 
-import java.util.Objects;
+import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT;
+import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.JOIN;
+import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver;
+import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send;
+import static net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback.EVENT;
 
 public class HotPotatoClient implements ClientModInitializer {
+    public static HotPotatoConfig config;
 
     @Override
     public void onInitializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(HotPotatoPayload.ID, (payload, context) -> context.client().execute(() -> {
-            HotPotatoIndex.setCurrentHotPotato(Objects.requireNonNull(context.client().getServer()), payload.player());
-            HotPotatoIndex.setCountdown(Objects.requireNonNull(context.client().getServer()), payload.countdown());
-        }));
-        HudRenderCallback.EVENT.register(((context, tickDelta) -> HotPotatoHud.render(context)));
+        config = HotPotatoConfig.load();
+        if (FabricLoader.getInstance().isModLoaded("modmenu")) HotPotatoModMenu.register();
+        if (FabricLoader.getInstance().isModLoaded("cloth-config")) HotPotatoKeybinds.register();
+
+        registerGlobalReceiver(HotPotatoPayload.ID, (payload, context) -> context.client().execute(() -> HotPotatoClientStorage.setCountdown(payload.countdown())));
+        EVENT.register(new HotPotatoHud());
+        DISCONNECT.register((handler, client) -> HotPotatoClientStorage.setCountdown(-1));
+        JOIN.register((handler, sender, client) -> send(new RequestHotPotatoPayload()));
     }
 }

@@ -1,34 +1,85 @@
 package net.thorminate.hotpotato.client.hud;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.thorminate.hotpotato.common.HotPotatoIndex;
+import net.minecraft.util.Identifier;
 
-import java.util.Objects;
+import static java.lang.Integer.parseInt;
+import static net.thorminate.hotpotato.HotPotato.MOD_ID;
 
-public class HotPotatoHud {
-    public static void render(DrawContext context) {
-        int countdown = HotPotatoIndex.getCountdown(Objects.requireNonNull(MinecraftClient.getInstance().getServer()));
-        if (countdown <= 0) return;
+import net.thorminate.hotpotato.client.HotPotatoClient;
+import net.thorminate.hotpotato.client.storage.HotPotatoClientStorage;
 
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player == null) return;
+public class HotPotatoHud implements HudRenderCallback {
+    private static final Identifier FINAL_POTATO = Identifier.of(MOD_ID, "textures/gui/final_potato.png");
 
-        int screenWidth = client.getWindow().getScaledWidth();
-        int screenHeight = client.getWindow().getScaledHeight();
+    @Override
+    public void onHudRender(DrawContext context, RenderTickCounter renderTickCounter) {
+        if (HotPotatoClient.config.shouldRenderCountdown || HotPotatoClient.config.shouldRenderImage) {
+            int countdown = HotPotatoClientStorage.getCountdown();
+            if (countdown <= 0) return;
 
-        int seconds = countdown % 60;
-        int minutes = countdown / 60;
-        if (seconds < 10) {
-            seconds = Integer.parseInt("0" + seconds);
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client.player == null) return;
+
+            // Variables and logic for the text
+            if (HotPotatoClient.config.shouldRenderImage) {
+                int textureHudPosX = client.getWindow().getScaledWidth() - 64;
+                int textureHudPosY = 0;
+
+                // Variables and logic for the texture
+                RenderSystem.enableBlend();
+                RenderSystem.defaultBlendFunc();
+
+                context.drawTexture(
+                        FINAL_POTATO,
+                        textureHudPosX, textureHudPosY,
+                        0, 0,
+                        64, 64,
+                        64, 64
+                );
+
+                RenderSystem.disableBlend();
+            }
+
+            if (HotPotatoClient.config.shouldRenderCountdown) {
+                int textHudPosX = client.getWindow().getScaledWidth() - 48;
+                int textHudPosY = 74;
+                int seconds = countdown % 60;
+                int minutes = countdown / 60;
+
+                if (seconds < 10) {
+                    seconds = parseInt("0" + seconds);
+                }
+                if (minutes < 10) {
+                    minutes = parseInt("0" + minutes);
+                }
+
+                Formatting formatting;
+                if (countdown < 60) {
+                    formatting = Formatting.RED;
+                } else if (countdown < 300) {
+                    formatting = Formatting.YELLOW;
+                } else {
+                    formatting = Formatting.GREEN;
+                }
+
+                Text text = Text.literal("\uD83D\uDD25" + minutes + "m " + seconds + "s").formatted(formatting);
+
+                context.drawText(
+                        client.textRenderer,
+                        text,
+                        textHudPosX, textHudPosY,
+                        0xFFFFFF,
+                        true
+                );
+
+            }
         }
-        if (minutes < 10) {
-            minutes = Integer.parseInt("0" + minutes);
-        }
-
-        String timeText = "\uD83D\uDD25" + minutes + "m " + seconds + "s";
-        context.drawText(client.textRenderer, Text.literal(timeText).formatted(Formatting.RED), screenWidth / 3, screenHeight / 3, 0xFFFFFF, false);
     }
 }

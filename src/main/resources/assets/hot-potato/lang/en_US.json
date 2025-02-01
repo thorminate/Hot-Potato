@@ -1,0 +1,10 @@
+{
+  "key.hot-potato.open_config": "Open Hot Potato Config",
+  "key.categories.hot-potato": "Hot Potato",
+  "config.hot-potato.title": "Hot Potato Config",
+  "config.hot-potato.category.general": "General",
+  "config.hot-potato.shouldRenderPotato": "Render Hot Potato Image",
+  "config.hot-potato.shouldRenderCountdown": "Render Hot Potato Countdown",
+  "config.hot-potato.shouldRenderPotato.tooltip": "Whether to render the hot potato image on the screen.",
+  "config.hot-potato.shouldRenderCountdown.tooltip": "Whether to render the hot potato countdown on the screen."
+}
