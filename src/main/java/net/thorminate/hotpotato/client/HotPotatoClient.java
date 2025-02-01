@@ -21,6 +21,7 @@ public class HotPotatoClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // Loads the config into memory.
         config = HotPotatoConfig.load();
         if (FabricLoader.getInstance().isModLoaded("modmenu")) HotPotatoModMenu.register();
         if (FabricLoader.getInstance().isModLoaded("cloth-config")) HotPotatoKeybinds.register();
