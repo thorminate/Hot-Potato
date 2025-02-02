@@ -178,10 +178,16 @@ public class HotPotatoGame {
      * @param server The server where the game is running, is used to get the player list, may not be null.
      */
     public static void syncDataWithPlayers(@NotNull MinecraftServer server) {
-        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            if (player.getUuid().equals(getCurrentHotPotato(server))) {
-                send(player, new HotPotatoPayload(getCountdown(server)));
-            } else {
+        if (getCurrentHotPotato(server) != null) {
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                if (player.getUuid().equals(getCurrentHotPotato(server))) {
+                    send(player, new HotPotatoPayload(getCountdown(server)));
+                } else {
+                    send(player, new HotPotatoPayload(-1));
+                }
+            }
+        } else {
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 send(player, new HotPotatoPayload(-1));
             }
         }
