@@ -14,14 +14,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class HotPotatoTimer {
-    private static ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
+    private static ScheduledExecutorService SCHEDULER;
     private static ServerPlayerEntity currentHotPotato = null;
     private static int timeLeft = -1;
 
     public static void startTimer(MinecraftServer server) {
-        if (SCHEDULER.isShutdown()) {
-            SCHEDULER = Executors.newScheduledThreadPool(1);
-        }
+        if (SCHEDULER != null) SCHEDULER.shutdown();
+        SCHEDULER = Executors.newScheduledThreadPool(1);
         SCHEDULER.scheduleAtFixedRate(() -> {
             timeLeft = HotPotatoGame.getCountdown(server);
             currentHotPotato = server.getPlayerManager().getPlayer(HotPotatoGame.getCurrentHotPotato(server));

@@ -14,9 +14,40 @@ import static net.thorminate.hotpotato.HotPotato.MOD_ID;
 
 import net.thorminate.hotpotato.client.HotPotatoClient;
 import net.thorminate.hotpotato.client.storage.HotPotatoClientStorage;
+import org.jetbrains.annotations.NotNull;
 
 public class HotPotatoHud implements HudRenderCallback {
-    private static final Identifier FINAL_POTATO = Identifier.of(MOD_ID, "textures/gui/final_potato.png");
+    private static final Identifier POTATO_1 = Identifier.of(MOD_ID, "textures/gui/potato_1.png");
+    private static final Identifier POTATO_2 = Identifier.of(MOD_ID, "textures/gui/potato_2.png");
+    private static final Identifier POTATO_3 = Identifier.of(MOD_ID, "textures/gui/potato_3.png");
+    private static final Identifier POTATO_4 = Identifier.of(MOD_ID, "textures/gui/potato_4.png");
+    private static final Identifier POTATO_5 = Identifier.of(MOD_ID, "textures/gui/potato_5.png");
+    private static final Identifier POTATO_6 = Identifier.of(MOD_ID, "textures/gui/potato_6.png");
+    private static final Identifier POTATO_7 = Identifier.of(MOD_ID, "textures/gui/potato_7.png");
+    private static final Identifier POTATO_8 = Identifier.of(MOD_ID, "textures/gui/potato_8.png");
+
+    private static @NotNull Identifier getIdentifier(int countdown) {
+        Identifier potatoTexture;
+
+        if (countdown < 30) {
+            potatoTexture = POTATO_8;
+        } else if (countdown < 60) {
+            potatoTexture = POTATO_7;
+        } else if (countdown < 180) {
+            potatoTexture = POTATO_6;
+        } else if (countdown < 300) {
+            potatoTexture = POTATO_5;
+        } else if (countdown < 420) {
+            potatoTexture = POTATO_4;
+        } else if (countdown < 600) {
+            potatoTexture = POTATO_3;
+        } else if (countdown < 900) {
+            potatoTexture = POTATO_2;
+        } else {
+            potatoTexture = POTATO_1;
+        }
+        return potatoTexture;
+    }
 
     @Override
     public void onHudRender(DrawContext context, RenderTickCounter renderTickCounter) {
@@ -27,29 +58,39 @@ public class HotPotatoHud implements HudRenderCallback {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.player == null) return;
 
+            int textureHudPosX;
+            int textureHudPosY;
+            int textureSize = 64;
+
+            int textHudPosX;
+            int textHudPosY;
+
+
             // Variables and logic for the text
             if (HotPotatoClient.config.shouldRenderImage) {
-                int textureHudPosX = client.getWindow().getScaledWidth() - 64;
-                int textureHudPosY = 0;
+
+                textureHudPosX = client.getWindow().getScaledWidth() - 64;
+                textureHudPosY = 0;
 
                 // Variables and logic for the texture
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
 
+                Identifier potatoTexture = getIdentifier(countdown);
+
                 context.drawTexture(
-                        FINAL_POTATO,
+                        potatoTexture,
                         textureHudPosX, textureHudPosY,
                         0, 0,
-                        64, 64,
-                        64, 64
+                        textureSize, textureSize,
+                        textureSize, textureSize
                 );
 
                 RenderSystem.disableBlend();
             }
 
             if (HotPotatoClient.config.shouldRenderCountdown) {
-                int textHudPosX = client.getWindow().getScaledWidth() - 48;
-                int textHudPosY = 74;
+
                 int seconds = countdown % 60;
                 int minutes = countdown / 60;
 
@@ -71,6 +112,19 @@ public class HotPotatoHud implements HudRenderCallback {
 
                 Text text = Text.literal("\uD83D\uDD25" + minutes + "m " + seconds + "s").formatted(formatting);
 
+                int textWidth = client.textRenderer.getWidth(text);
+
+                if (HotPotatoClient.config.shouldRenderImage) {
+
+                    int textPadding = (textureSize - textWidth) / 2;
+
+                    textHudPosX = client.getWindow().getScaledWidth() - textWidth - textPadding;
+                    textHudPosY = 64;
+                } else {
+                    textHudPosX = client.getWindow().getScaledWidth() - textWidth - 5;
+                    textHudPosY = 5;
+                }
+
                 context.drawText(
                         client.textRenderer,
                         text,
@@ -82,4 +136,6 @@ public class HotPotatoHud implements HudRenderCallback {
             }
         }
     }
+
+
 }

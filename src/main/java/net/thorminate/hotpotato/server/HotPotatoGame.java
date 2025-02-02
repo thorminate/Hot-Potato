@@ -179,7 +179,11 @@ public class HotPotatoGame {
      */
     public static void syncDataWithPlayers(@NotNull MinecraftServer server) {
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            send(player, new HotPotatoPayload(getCountdown(server)));
+            if (player.getUuid().equals(getCurrentHotPotato(server))) {
+                send(player, new HotPotatoPayload(getCountdown(server)));
+            } else {
+                send(player, new HotPotatoPayload(-1));
+            }
         }
     }
 }

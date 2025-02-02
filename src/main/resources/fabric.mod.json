@@ -2,24 +2,30 @@
 	"schemaVersion": 1,
 	"id": "hot-potato",
 	"version": "${version}",
-	"name": "hot-potato",
-	"description": "Adds a simple Hot Potato game mode that can be activated using \"/starthotpotato\"",
+	"name": "Hot Potato",
+	"description": "Adds a simple Hot Potato game mode that can be activated using \"/start-hot-potato\"",
+	"license": "MIT",
+	"icon": "assets/hot-potato/icon.png",
+	"environment": "*",
 	"authors": [
 		"Thorminate"
+	],
+	"contributors": [
+		"MegaNibby"
 	],
 	"contact": {
 		"homepage": "https://github.com/thorminate",
 		"issues": "https://github.com/thorminate/Hot-Potato/issues",
 		"sources": "https://github.com/thorminate/Hot-Potato"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/hot-potato/icon.png",
-	"client": {
-		"dependencies": {
-			"cloth-config-fabric": "*"
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.discord": "https://discord.gg/XWMby3rf5D",
+				"modmenu.modrinth": "https://modrinth.com/user/Thorminate"
+			}
 		}
 	},
-	"environment": "*",
 	"entrypoints": {
 		"main": [
 			"net.thorminate.hotpotato.HotPotato"
@@ -41,15 +47,10 @@
 		"fabricloader": ">=0.16.10",
 		"minecraft": "~1.21.1",
 		"java": ">=21",
-		"fabric-api": "*"
+		"fabric-api": ">=0.115.0+1.21.1"
 	},
 	"suggests": {
-		"modmenu": "*",
-		"cloth-config-fabric": "*"
-	},
-	"custom": {
-		"modmenu": {
-			"api": true
-		}
+		"modmenu": ">=11.0.1",
+		"cloth-config-fabric": ">=15.0.130+fabric"
 	}
 }
