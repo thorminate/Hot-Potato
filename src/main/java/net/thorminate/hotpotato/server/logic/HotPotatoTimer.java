@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.thorminate.hotpotato.HotPotato;
@@ -28,7 +29,7 @@ public class HotPotatoTimer {
             if (timeLeft <= 0) {
                 HotPotato.LOGGER.info("Hot potato exploded!");
                 if (currentHotPotato != null) {
-                    eliminatePlayer(currentHotPotato);
+                    eliminatePlayer(currentHotPotato, server.getWorld(currentHotPotato.getWorld().getRegistryKey()));
                 } else {
                     HotPotato.LOGGER.info("Hot potato exploded, but the hot potato was null! Make sure the player is online.");
                 }
@@ -46,10 +47,10 @@ public class HotPotatoTimer {
         SCHEDULER.shutdown();
     }
 
-    private static void eliminatePlayer(ServerPlayerEntity player) {
+    private static void eliminatePlayer(ServerPlayerEntity player, ServerWorld world) {
         LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, player.getWorld());
         lightning.setPosition(player.getPos());
         player.getWorld().spawnEntity(lightning);
-        player.kill();
+        player.kill(world);
     }
 }
