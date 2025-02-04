@@ -106,7 +106,7 @@ public class HotPotatoGame {
      * @return Whether the action was successful, via ActionResult.
      */
     public static ActionResult onUseEntity(@NotNull PlayerEntity player, @NotNull World world, @NotNull Entity entity) {
-        if (world.isClient()) return ActionResult.PASS;
+        if (world.isClient()) return ActionResult.CONSUME;
 
         MinecraftServer server = entity.getServer();
         if (server == null) {
@@ -125,6 +125,8 @@ public class HotPotatoGame {
         serverWorld.playSound(entity, entity.getBlockPos(), ENTITY_SILVERFISH_STEP, MASTER, 1, 1);
 
         setCurrentHotPotato(server, entity.getUuid());
+
+        player.swingHand(player.getActiveHand(), true);
 
         return ActionResult.SUCCESS;
     }
