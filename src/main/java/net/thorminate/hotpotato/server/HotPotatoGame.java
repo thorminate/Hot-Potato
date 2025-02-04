@@ -7,9 +7,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
+import net.thorminate.hotpotato.server.logic.HotPotatoCooldownManager;
 import net.thorminate.hotpotato.server.storage.WorldDataManager;
 import net.thorminate.hotpotato.server.network.HotPotatoPayload;
 
+import static net.minecraft.util.Formatting.BLUE;
 import static net.thorminate.hotpotato.server.logic.HotPotatoTimer.startTimer;
 import static net.thorminate.hotpotato.server.logic.HotPotatoTimer.stopTimer;
 import static net.thorminate.hotpotato.HotPotato.LOGGER;
@@ -108,11 +110,13 @@ public class HotPotatoGame {
     public static ActionResult onUseEntity(@NotNull PlayerEntity player, @NotNull World world, @NotNull Entity entity) {
         if (world.isClient()) return ActionResult.CONSUME;
 
-        MinecraftServer server = entity.getServer();
-        if (server == null) {
+        if (HotPotatoCooldownManager.isOnCooldown()) {
+            player.sendMessage(literal("Calm down! You are on cooldown!").formatted(BLUE), true);
             return ActionResult.FAIL;
         }
 
+        MinecraftServer server = entity.getServer();
+        if (server == null) return ActionResult.FAIL;
         if (!entity.isPlayer()) return ActionResult.FAIL;
         if (!getCurrentHotPotato(server).equals(player.getUuid())) return ActionResult.FAIL;
         if (getCountdown(server) <= 0) return ActionResult.FAIL;
@@ -127,6 +131,7 @@ public class HotPotatoGame {
         setCurrentHotPotato(server, entity.getUuid());
 
         player.swingHand(player.getActiveHand(), true);
+        HotPotatoCooldownManager.setCooldown();
 
         return ActionResult.SUCCESS;
     }
