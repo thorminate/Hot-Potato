@@ -17,6 +17,8 @@ import net.thorminate.hotpotato.client.HotPotatoClient;
 import net.thorminate.hotpotato.client.storage.HotPotatoClientStorage;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Random;
+
 public class HotPotatoHud implements HudRenderCallback {
     private static final Identifier POTATO_1 = Identifier.of(MOD_ID, "textures/gui/potato_1.png");
     private static final Identifier POTATO_2 = Identifier.of(MOD_ID, "textures/gui/potato_2.png");
@@ -26,6 +28,7 @@ public class HotPotatoHud implements HudRenderCallback {
     private static final Identifier POTATO_6 = Identifier.of(MOD_ID, "textures/gui/potato_6.png");
     private static final Identifier POTATO_7 = Identifier.of(MOD_ID, "textures/gui/potato_7.png");
     private static final Identifier POTATO_8 = Identifier.of(MOD_ID, "textures/gui/potato_8.png");
+    private final Random random = new Random();
 
     private static @NotNull Identifier getIdentifier(int countdown) {
         Identifier potatoTexture;
@@ -72,6 +75,12 @@ public class HotPotatoHud implements HudRenderCallback {
 
                 textureHudPosX = client.getWindow().getScaledWidth() - 64;
                 textureHudPosY = 0;
+
+                if (countdown < 10) {
+                    int shakeIntensity = Math.round((11 - countdown) * 1.5f);
+                    textureHudPosX = textureHudPosX + (random.nextInt(shakeIntensity * 2 + 1) - shakeIntensity);
+                    textureHudPosY = textureHudPosY + (random.nextInt(shakeIntensity * 2 + 1) - shakeIntensity);
+                }
 
                 // Variables and logic for the texture
                 RenderSystem.enableBlend();

@@ -44,7 +44,7 @@ public class HotPotatoTimer {
     }
 
     public static void stopTimer() {
-        SCHEDULER.shutdown();
+        if (SCHEDULER != null) SCHEDULER.shutdown();
     }
 
     private static void eliminatePlayer(ServerPlayerEntity player, ServerWorld world) {
