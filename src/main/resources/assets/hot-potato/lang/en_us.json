@@ -1,5 +1,4 @@
 {
-  // Config
   "config.hot-potato.title": "Hot Potato Config",
   "config.hot-potato.category.general": "General",
   "config.hot-potato.shouldRenderPotato": "Render Hot Potato Image",
@@ -7,13 +6,11 @@
   "config.hot-potato.shouldRenderPotato.tooltip": "Whether to render the hot potato image on the screen.",
   "config.hot-potato.shouldRenderCountdown.tooltip": "Whether to render the hot potato countdown on the screen.",
 
-  // Errors
   "error.hot-potato.no_players": "Unable to start hot potato, no players online.",
   "error.hot-potato.not_started": "Unable to resume hot potato, hot potato not started.",
   "commands.start_hot_potato.already_started": "Hot potato has already started. Run /stop-hot-potato to stop the game and re-run this command to start a new game.",
   "commands.stop_hot_potato.failure": "Unable to stop hot potato.",
 
-  // General
   "commands.start_hot_potato.success": "Hot potato started!",
   "commands.stop_hot_potato.success": "Hot potato stopped!",
   "hot-potato.exploded": "Hot potato exploded!",

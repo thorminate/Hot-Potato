@@ -154,6 +154,7 @@ public class HotPotatoGame {
         if (serverWorld == null) return ActionResult.PASS;
 
         if (!entity.isPlayer()) return ActionResult.PASS;
+        if (getCurrentHotPotato(server) == null) return ActionResult.PASS;
         if (!getCurrentHotPotato(server).equals(player.getUuid())) return ActionResult.PASS;
         if (getCountdown(server) <= 0) return ActionResult.PASS;
 
