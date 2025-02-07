@@ -1,9 +1,9 @@
 package net.thorminate.hotpotato.server.storage;
 
-import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 
+import static net.minecraft.datafixer.DataFixTypes.LEVEL;
 import static net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 import java.util.UUID;
@@ -62,6 +62,6 @@ public class WorldDataManager extends PersistentState {
     public static final Type<WorldDataManager> TYPE = new Type<>(
             WorldDataManager::new,
             (nbt, registryLookup) -> new WorldDataManager(nbt),
-            DataFixTypes.LEVEL
+            LEVEL
     );
 }

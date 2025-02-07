@@ -1,14 +1,12 @@
 package net.thorminate.hotpotato.server.logic;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.thorminate.hotpotato.HotPotato;
-import net.thorminate.hotpotato.server.HotPotatoGame;
+
+import static net.minecraft.util.Formatting.RED;
+import static net.minecraft.text.Text.translatable;
+import static net.thorminate.hotpotato.HotPotato.LOGGER;
+import static net.thorminate.hotpotato.server.HotPotatoGame.*;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,34 +21,26 @@ public class HotPotatoTimer {
         if (SCHEDULER != null) SCHEDULER.shutdown();
         SCHEDULER = Executors.newScheduledThreadPool(1);
         SCHEDULER.scheduleAtFixedRate(() -> {
-            timeLeft = HotPotatoGame.getCountdown(server);
-            currentHotPotato = server.getPlayerManager().getPlayer(HotPotatoGame.getCurrentHotPotato(server));
+            timeLeft = getCountdown(server);
+            currentHotPotato = server.getPlayerManager().getPlayer(getCurrentHotPotato(server));
 
-            if (timeLeft <= 0) {
-                HotPotato.LOGGER.info("Hot potato exploded!");
+            if (timeLeft <= 1) {
                 if (currentHotPotato != null) {
-                    eliminatePlayer(currentHotPotato, server.getWorld(currentHotPotato.getWorld().getRegistryKey()));
+                    eliminate(currentHotPotato, server.getWorld(currentHotPotato.getWorld().getRegistryKey()));
                 } else {
-                    HotPotato.LOGGER.info("Hot potato exploded, but the hot potato was null! Make sure the player is online.");
+                    LOGGER.warn("Hot potato exploded, but the hot potato was not found! Make sure the player is online.");
                 }
-                server.getPlayerManager().broadcast(Text.literal("Hot potato exploded!").formatted(Formatting.RED), true);
-                HotPotatoGame.stopHotPotato(server);
+                server.getPlayerManager().broadcast(translatable("hot-potato.exploded").formatted(RED), true);
+                stop(server);
             }
 
             timeLeft--;
-            HotPotatoGame.setCountdown(server, timeLeft);
-            HotPotatoGame.syncDataWithPlayers(server);
+            setCountdown(server, timeLeft);
+            sync(server);
         }, 0, 1, TimeUnit.SECONDS);
     }
 
     public static void stopTimer() {
         if (SCHEDULER != null) SCHEDULER.shutdown();
-    }
-
-    private static void eliminatePlayer(ServerPlayerEntity player, ServerWorld world) {
-        LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, player.getWorld());
-        lightning.setPosition(player.getPos());
-        player.getWorld().spawnEntity(lightning);
-        player.kill(world);
     }
 }

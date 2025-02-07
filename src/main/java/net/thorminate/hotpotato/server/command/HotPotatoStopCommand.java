@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 import net.thorminate.hotpotato.server.HotPotatoGame;
 
-import static net.minecraft.text.Text.literal;
+import static net.minecraft.text.Text.translatable;
 
 public class HotPotatoStopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -21,11 +21,14 @@ public class HotPotatoStopCommand {
     private static int stopGame(CommandContext<ServerCommandSource> context) {
         MinecraftServer server = context.getSource().getServer();
 
-        boolean gameStopStatus = HotPotatoGame.stopHotPotato(server);
+        boolean gameStopStatus = HotPotatoGame.stop(server);
 
         if (gameStopStatus) {
-            context.getSource().sendFeedback(() -> literal("Hot potato stopped!").formatted(Formatting.DARK_GREEN), true);
-            return 0; // Command failed, return 0 (failure code)
-        } else return Command.SINGLE_SUCCESS;  // Command executed successfully, return 1 (success code)
+            context.getSource().sendFeedback(() -> translatable("commands.stop_hot_potato.success").formatted(Formatting.DARK_GREEN), true);
+            return Command.SINGLE_SUCCESS; // Command succeeded, return 0 (failure code)
+        } else {
+            context.getSource().sendFeedback(() -> translatable("commands.stop_hot_potato.failure").formatted(Formatting.RED), true);
+            return 0;  // Command executed successfully, return 1 (success code)
+        }
     }
 }

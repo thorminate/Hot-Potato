@@ -13,8 +13,8 @@ import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static net.minecraft.command.argument.EntityArgumentType.getPlayer;
 import static net.minecraft.command.argument.EntityArgumentType.player;
 import static net.minecraft.sound.SoundEvents.BLOCK_NOTE_BLOCK_PLING;
-import static net.minecraft.text.Text.literal;
-import static net.minecraft.util.Formatting.RED;
+import static net.minecraft.text.Text.translatable;
+import static net.minecraft.util.Formatting.*;
 import static net.thorminate.hotpotato.server.HotPotatoGame.*;
 
 public class HotPotatoStartCommand {
@@ -35,13 +35,14 @@ public class HotPotatoStartCommand {
         MinecraftServer server = context.getSource().getServer();
 
         if (getCountdown(server) > 0 || getCurrentHotPotato(server) != null) {
-            context.getSource().sendFeedback(() -> literal("Hot potato already started! Run /stop-hot-potato to stop the game and re-run this command to start a new game").formatted(RED), true);
+            context.getSource().sendFeedback(() -> translatable("commands.start_hot_potato.already_started").formatted(RED), true);
             return 0; // Command failed, return 0 (failure code)
         }
 
-        boolean gameStartStatus = startHotPotato(server, player, time);
+        boolean gameStartStatus = start(server, player, time);
 
         if (gameStartStatus) {
+            context.getSource().sendFeedback(() -> translatable("commands.start_hot_potato.success").formatted(GOLD), true);
             ServerPlayerEntity commandRunner = context.getSource().getPlayer();
             if (commandRunner != null) commandRunner.playSound(BLOCK_NOTE_BLOCK_PLING.value(), 1.0F, 1.0F);
             return SINGLE_SUCCESS;

@@ -1,6 +1,7 @@
 package net.thorminate.hotpotato.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.thorminate.hotpotato.client.config.HotPotatoConfig;
 import net.thorminate.hotpotato.client.hud.HotPotatoHud;
 import net.thorminate.hotpotato.client.network.RequestHotPotatoPayload;
@@ -11,7 +12,6 @@ import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionE
 import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.JOIN;
 import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver;
 import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send;
-import static net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback.EVENT;
 
 public class HotPotatoClient implements ClientModInitializer {
     public static HotPotatoConfig config;
@@ -21,7 +21,7 @@ public class HotPotatoClient implements ClientModInitializer {
         // Loads the config into memory.
         config = HotPotatoConfig.load();
         registerGlobalReceiver(HotPotatoPayload.ID, (payload, context) -> context.client().execute(() -> HotPotatoClientStorage.setCountdown(payload.countdown())));
-        EVENT.register(new HotPotatoHud());
+        HudRenderCallback.EVENT.register(new HotPotatoHud());
         DISCONNECT.register((handler, client) -> HotPotatoClientStorage.setCountdown(-1));
         JOIN.register((handler, sender, client) -> send(new RequestHotPotatoPayload()));
     }
