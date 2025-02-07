@@ -110,20 +110,20 @@ public class HotPotatoGame {
     public static ActionResult onUseEntity(@NotNull PlayerEntity player, @NotNull World world, @NotNull Entity entity) {
         if (world.isClient()) return ActionResult.CONSUME;
 
+        MinecraftServer server = entity.getServer();
+        if (server == null) return ActionResult.PASS;
+        if (!entity.isPlayer()) return ActionResult.PASS;
+        if (!getCurrentHotPotato(server).equals(player.getUuid())) return ActionResult.PASS;
+        if (getCountdown(server) <= 0) return ActionResult.PASS;
+
         if (HotPotatoCooldownManager.isOnCooldown()) {
             player.sendMessage(literal("Calm down! You are on cooldown!").formatted(BLUE), true);
-            return ActionResult.FAIL;
+            return ActionResult.PASS;
         }
-
-        MinecraftServer server = entity.getServer();
-        if (server == null) return ActionResult.FAIL;
-        if (!entity.isPlayer()) return ActionResult.FAIL;
-        if (!getCurrentHotPotato(server).equals(player.getUuid())) return ActionResult.FAIL;
-        if (getCountdown(server) <= 0) return ActionResult.FAIL;
 
         ServerWorld serverWorld = server.getWorld(world.getRegistryKey());
 
-        if (serverWorld == null) return ActionResult.FAIL;
+        if (serverWorld == null) return ActionResult.PASS;
 
         serverWorld.spawnParticles(FLAME, entity.getX(), entity.getY(), entity.getZ(), 10, 0.3, 0.3, 0.3, 0.5);
         serverWorld.playSound(entity, entity.getBlockPos(), ENTITY_SILVERFISH_STEP, MASTER, 1, 1);
