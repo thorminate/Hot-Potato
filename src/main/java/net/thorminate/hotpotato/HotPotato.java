@@ -18,13 +18,6 @@ public class HotPotato implements ModInitializer {
 	public static final String MOD_ID = "hot-potato";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	private static void receiveDataRequest(
-			RequestHotPotatoPayload payload,
-			ServerPlayNetworking.Context context
-	) {
-		HotPotatoGame.syncDataWithPlayers(context.server());
-	}
-
 	@Override
 	public void onInitialize() {
 		// First, register the commands
@@ -40,7 +33,9 @@ public class HotPotato implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(HotPotatoPayload.ID, HotPotatoPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(RequestHotPotatoPayload.ID, RequestHotPotatoPayload.CODEC);
 
-		ServerPlayNetworking.registerGlobalReceiver(RequestHotPotatoPayload.ID, HotPotato::receiveDataRequest);
+		ServerPlayNetworking.registerGlobalReceiver(RequestHotPotatoPayload.ID, (payload, context) -> {
+			HotPotatoGame.syncDataWithPlayers(context.server());
+		});
 
 		ServerLifecycleEvents.SERVER_STARTED.register(HotPotatoGame::resumeHotPotato);
 		ServerLifecycleEvents.SERVER_STOPPING.register((server -> HotPotatoGame.pauseHotPotato()));
