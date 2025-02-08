@@ -8,18 +8,21 @@ import static net.minecraft.text.Text.translatable;
 import static net.thorminate.hotpotato.HotPotato.LOGGER;
 import static net.thorminate.hotpotato.server.HotPotatoGame.*;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class HotPotatoTimer {
     private static ScheduledExecutorService SCHEDULER;
-    private static ServerPlayerEntity currentHotPotato = null;
+    private static ServerPlayerEntity currentHotPotato;
     private static int timeLeft = -1;
 
     public static void startTimer(MinecraftServer server) {
         if (SCHEDULER != null) SCHEDULER.shutdown();
-        SCHEDULER = Executors.newScheduledThreadPool(1);
+        SCHEDULER = Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread thread = new Thread(runnable);
+            thread.setName("Hot-Potato-Timer");
+            return thread;
+        });
+
         SCHEDULER.scheduleAtFixedRate(() -> {
             timeLeft = getCountdown(server);
             currentHotPotato = server.getPlayerManager().getPlayer(getCurrentHotPotato(server));
@@ -28,7 +31,7 @@ public class HotPotatoTimer {
                 if (currentHotPotato != null) {
                     eliminate(currentHotPotato, server.getWorld(currentHotPotato.getWorld().getRegistryKey()));
                 } else {
-                    LOGGER.warn("Hot potato exploded, but the hot potato was not found! Make sure the player is online.");
+                    LOGGER.warn("The hot potato was not found! Make sure the player is online.");
                 }
                 server.getPlayerManager().broadcast(translatable("hot-potato.exploded").formatted(RED), true);
                 stop(server);

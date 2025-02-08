@@ -20,15 +20,30 @@ import static net.thorminate.hotpotato.server.HotPotatoGame.*;
 public class HotPotatoStartCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("start-hot-potato")
-                .requires(source -> source.hasPermissionLevel(2))// Admin-level permission
-                .executes(context -> startGame(context, -1, null)) // No arguments
-                .then(CommandManager.argument("minutes", integer(0, 60))
-                    .executes(context -> startGame(context, getInteger(context, "minutes") * 60, null))
+            .requires(source -> source.hasPermissionLevel(2))// Admin-level permission
+            .executes(context -> startGame(context, -1, null)) // No arguments
+            .then(CommandManager.argument("minutes", integer(0, 60))
+                .executes(context -> startGame(context, getInteger(context, "minutes") * 60, null))
                 .then(CommandManager.argument("seconds", integer(0, 59))
-                    .executes(context -> startGame(context, getInteger(context, "minutes") * 60 + getInteger(context, "seconds"), null))
-                .then(CommandManager.argument("player", player())
-                    .executes(context -> startGame(context, getInteger(context, "minutes") * 60 + getInteger(context, "seconds"), getPlayer(context, "player")))))
-        ));
+                    .executes(
+                            context -> startGame(
+                                    context,
+                                    getInteger(context, "minutes") * 60 + getInteger(context, "seconds"),
+                                    null
+                            )
+                    )
+                    .then(CommandManager.argument("player", player())
+                        .executes(
+                                context -> startGame(
+                                        context,
+                                        getInteger(context, "minutes") * 60 + getInteger(context, "seconds"),
+                                        getPlayer(context, "player")
+                                )
+                        )
+                    )
+                )
+            )
+        );
     }
 
     private static int startGame(CommandContext<ServerCommandSource> context, int time, ServerPlayerEntity player) {

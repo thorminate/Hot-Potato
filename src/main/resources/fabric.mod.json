@@ -29,9 +29,6 @@
 		"main": [
 			"net.thorminate.hotpotato.HotPotato"
 		],
-		"fabric-datagen": [
-			"net.thorminate.hotpotato.dataGen.HotPotatoDataGenerator"
-		],
 		"client": [
 			"net.thorminate.hotpotato.client.HotPotatoClient"
 		],

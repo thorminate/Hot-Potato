@@ -112,7 +112,6 @@ public class HotPotatoGame {
             seconds = 30;
         }
 
-        LOGGER.info("Hot potato given to someone...");
         setCurrentHotPotato(server, player.getUuid());
         setCountdown(server, seconds);
 

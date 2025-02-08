@@ -15,7 +15,8 @@ public class HotPotatoStopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("stop-hot-potato")
                 .requires(source -> source.hasPermissionLevel(2)) // Admin-level permission
-                .executes(HotPotatoStopCommand::stopGame));
+                .executes(HotPotatoStopCommand::stopGame)
+        );
     }
 
     private static int stopGame(CommandContext<ServerCommandSource> context) {
