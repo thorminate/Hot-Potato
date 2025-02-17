@@ -14,12 +14,12 @@ import static java.lang.Integer.parseInt;
 import static net.thorminate.hotpotato.HotPotato.MOD_ID;
 
 import net.thorminate.hotpotato.client.HotPotatoClient;
-import net.thorminate.hotpotato.client.storage.HotPotatoClientStorage;
+import net.thorminate.hotpotato.client.storage.StorageManagerClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-public class HotPotatoHud implements HudRenderCallback {
+public class Hud implements HudRenderCallback {
     private static final Identifier POTATO_1 = Identifier.of(MOD_ID, "textures/gui/potato_1.png");
     private static final Identifier POTATO_2 = Identifier.of(MOD_ID, "textures/gui/potato_2.png");
     private static final Identifier POTATO_3 = Identifier.of(MOD_ID, "textures/gui/potato_3.png");
@@ -56,7 +56,7 @@ public class HotPotatoHud implements HudRenderCallback {
     @Override
     public void onHudRender(DrawContext context, RenderTickCounter renderTickCounter) {
         if (HotPotatoClient.config.shouldRenderCountdown || HotPotatoClient.config.shouldRenderImage) {
-            int countdown = HotPotatoClientStorage.getCountdown();
+            int countdown = StorageManagerClient.getCountdown();
             if (countdown <= 0) return;
 
             MinecraftClient client = MinecraftClient.getInstance();

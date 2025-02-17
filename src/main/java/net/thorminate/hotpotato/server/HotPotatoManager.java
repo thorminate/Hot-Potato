@@ -7,8 +7,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 
-import net.thorminate.hotpotato.server.storage.WorldDataManager;
-import net.thorminate.hotpotato.server.network.HotPotatoPayload;
+import net.thorminate.hotpotato.server.storage.StorageManager;
+import net.thorminate.hotpotato.server.network.CountdownPayload;
 
 import static net.minecraft.text.Text.translatable;
 
@@ -25,7 +25,7 @@ public class HotPotatoManager {
      */
     public static UUID getCurrentHotPotato(@NotNull MinecraftServer server) {
         ServerWorld world = server.getOverworld();
-        return world.getPersistentStateManager().getOrCreate(WorldDataManager.TYPE, WorldDataManager.PLAYER_KEY).getCurrentHotPotato();
+        return world.getPersistentStateManager().getOrCreate(StorageManager.TYPE, StorageManager.PLAYER_KEY).getCurrentHotPotato();
     }
 
     /**
@@ -35,7 +35,7 @@ public class HotPotatoManager {
      */
     public static int getCountdown(@NotNull MinecraftServer server) {
         ServerWorld world = server.getOverworld();
-        return world.getPersistentStateManager().getOrCreate(WorldDataManager.TYPE, WorldDataManager.COUNTDOWN_KEY).getCountdown();
+        return world.getPersistentStateManager().getOrCreate(StorageManager.TYPE, StorageManager.COUNTDOWN_KEY).getCountdown();
     }
 
     /**
@@ -49,7 +49,7 @@ public class HotPotatoManager {
             player.sendMessage(translatable("hot-potato.you_are_hot_potato").formatted(Formatting.RED), false);
         }
         ServerWorld world = server.getOverworld();
-        world.getPersistentStateManager().getOrCreate(WorldDataManager.TYPE, WorldDataManager.PLAYER_KEY).setCurrentHotPotato(playerUuid);
+        world.getPersistentStateManager().getOrCreate(StorageManager.TYPE, StorageManager.PLAYER_KEY).setCurrentHotPotato(playerUuid);
     }
 
     /**
@@ -59,7 +59,7 @@ public class HotPotatoManager {
      */
     public static void setCountdown(@NotNull MinecraftServer server, int time) {
         ServerWorld world = server.getOverworld();
-        world.getPersistentStateManager().getOrCreate(WorldDataManager.TYPE, WorldDataManager.COUNTDOWN_KEY).setCountdown(time);
+        world.getPersistentStateManager().getOrCreate(StorageManager.TYPE, StorageManager.COUNTDOWN_KEY).setCountdown(time);
     }
 
     /**
@@ -70,14 +70,14 @@ public class HotPotatoManager {
         if (getCurrentHotPotato(server) != null) {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 if (player.getUuid().equals(getCurrentHotPotato(server))) {
-                    ServerPlayNetworking.send(player, new HotPotatoPayload(getCountdown(server)));
+                    ServerPlayNetworking.send(player, new CountdownPayload(getCountdown(server)));
                 } else {
-                    ServerPlayNetworking.send(player, new HotPotatoPayload(-1));
+                    ServerPlayNetworking.send(player, new CountdownPayload(-1));
                 }
             }
         } else {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                ServerPlayNetworking.send(player, new HotPotatoPayload(-1));
+                ServerPlayNetworking.send(player, new CountdownPayload(-1));
             }
         }
     }

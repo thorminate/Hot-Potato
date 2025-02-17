@@ -10,7 +10,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class HotPotatoConfig {
+public class Config {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "hot_potato.json");
 
@@ -18,17 +18,17 @@ public class HotPotatoConfig {
     public boolean shouldRenderCountdown = true; // Default: Enabled
 
     // Load config from file
-    public static HotPotatoConfig load() {
+    public static Config load() {
         if (!CONFIG_FILE.exists()) {
-            HotPotatoConfig config = new HotPotatoConfig();
+            Config config = new Config();
             config.save();
             return config;
         }
         try (FileReader reader = new FileReader(CONFIG_FILE)) {
-            return GSON.fromJson(reader, HotPotatoConfig.class);
+            return GSON.fromJson(reader, Config.class);
         } catch (IOException e) {
             HotPotato.LOGGER.error("An error occurred in someMethod:", e);
-            return new HotPotatoConfig(); // Fallback default
+            return new Config(); // Fallback default
         }
     }
 

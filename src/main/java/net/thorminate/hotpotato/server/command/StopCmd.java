@@ -8,16 +8,16 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 import net.thorminate.hotpotato.server.HotPotatoManager;
-import net.thorminate.hotpotato.server.logic.HotPotatoTimer;
+import net.thorminate.hotpotato.server.logic.Timer;
 import org.jetbrains.annotations.NotNull;
 
 import static net.minecraft.text.Text.translatable;
 
-public class HotPotatoStopCommand {
+public class StopCmd {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("stop-hot-potato")
                 .requires(source -> source.hasPermissionLevel(2)) // Admin-level permission
-                .executes(HotPotatoStopCommand::stopGame)
+                .executes(StopCmd::stopGame)
         );
     }
 
@@ -36,7 +36,7 @@ public class HotPotatoStopCommand {
     }
 
     public static boolean stop(@NotNull MinecraftServer server) {
-        HotPotatoTimer.stopTimer();
+        Timer.stopTimer();
         HotPotatoManager.setCurrentHotPotato(server, null);
         HotPotatoManager.setCountdown(server, -1);
         HotPotatoManager.syncWithClients(server);

@@ -5,7 +5,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.thorminate.hotpotato.server.command.HotPotatoStopCommand;
+import net.thorminate.hotpotato.server.command.StopCmd;
 import org.jetbrains.annotations.NotNull;
 
 import static net.minecraft.util.Formatting.RED;
@@ -15,7 +15,7 @@ import static net.thorminate.hotpotato.server.HotPotatoManager.*;
 
 import java.util.concurrent.*;
 
-public class HotPotatoTimer {
+public class Timer {
     private static ScheduledExecutorService SCHEDULER;
     private static ServerPlayerEntity currentHotPotato;
     private static int timeLeft = -1;
@@ -39,7 +39,7 @@ public class HotPotatoTimer {
                     LOGGER.warn("The hot potato was not found! Make sure the player is online.");
                 }
                 server.getPlayerManager().broadcast(translatable("hot-potato.exploded").formatted(RED), true);
-                HotPotatoStopCommand.stop(server);
+                StopCmd.stop(server);
             }
 
             timeLeft--;

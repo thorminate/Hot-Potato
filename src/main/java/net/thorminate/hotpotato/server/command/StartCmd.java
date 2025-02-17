@@ -6,7 +6,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.thorminate.hotpotato.server.logic.HotPotatoTimer;
+import net.thorminate.hotpotato.server.logic.Timer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ import static net.minecraft.text.Text.translatable;
 import static net.minecraft.util.Formatting.*;
 import static net.thorminate.hotpotato.server.HotPotatoManager.*;
 
-public class HotPotatoStartCommand {
+public class StartCmd {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("start-hot-potato")
             .requires(source -> source.hasPermissionLevel(2))// Admin-level permission
@@ -95,7 +95,7 @@ public class HotPotatoStartCommand {
         setCurrentHotPotato(server, player.getUuid());
         setCountdown(server, seconds);
 
-        HotPotatoTimer.startTimer(server);
+        Timer.startTimer(server);
         return true;
     }
 }

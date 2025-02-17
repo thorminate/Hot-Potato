@@ -33,7 +33,7 @@
 			"net.thorminate.hotpotato.client.HotPotatoClient"
 		],
 		"modmenu": [
-			"net.thorminate.hotpotato.client.config.HotPotatoModMenu"
+			"net.thorminate.hotpotato.client.config.ModMenuCompat"
 		]
 	},
 	"depends": {

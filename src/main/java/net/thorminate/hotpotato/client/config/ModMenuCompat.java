@@ -4,11 +4,11 @@ import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.fabricmc.loader.api.FabricLoader;
 
-public class HotPotatoModMenu implements ModMenuApi {
+public class ModMenuCompat implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         if (!FabricLoader.getInstance().isModLoaded("cloth-config")) return null;
 
-        return HotPotatoConfigScreen::create;
+        return ConfigScreen::create;
     }
 }

@@ -1,6 +1,6 @@
 package net.thorminate.hotpotato.server.logic;
 
-public class HotPotatoCooldownManager {
+public class CooldownManager {
     private static long cooldown = 0;
     private static final int COOLDOWN_TIME = 3000; // 3 seconds
 

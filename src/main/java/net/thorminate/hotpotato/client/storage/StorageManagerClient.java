@@ -4,7 +4,7 @@ package net.thorminate.hotpotato.client.storage;
  * Storage for the current hot potato on the client, uses simple static variables stored in memory.
  * The setters are just for syncing up with the server, and they shouldn't be changed by the client itself.
  */
-public class HotPotatoClientStorage {
+public class StorageManagerClient {
     private static int countdown;
 
     /**
@@ -20,6 +20,6 @@ public class HotPotatoClientStorage {
      * @param countdown The countdown in seconds to override the current countdown, will be considered as null if negative.
      */
     public static void setCountdown(int countdown) {
-        HotPotatoClientStorage.countdown = countdown;
+        StorageManagerClient.countdown = countdown;
     }
 }

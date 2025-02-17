@@ -10,14 +10,14 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
-public class WorldDataManager extends PersistentState {
+public class StorageManager extends PersistentState {
     public static final String COUNTDOWN_KEY = "hot_potato_countdown";
     public static final String PLAYER_KEY = "hot_potato_player";
 
     private UUID currentHotPotato;
     private int countdown;
 
-    public WorldDataManager(NbtCompound nbt) {
+    public StorageManager(NbtCompound nbt) {
         // First read the countdown and put it in the field to be stored in memory.
         if (nbt.contains(COUNTDOWN_KEY)) this.countdown = nbt.getInt(COUNTDOWN_KEY);
 
@@ -28,7 +28,7 @@ public class WorldDataManager extends PersistentState {
         this.currentHotPotato = player.equals(new UUID(0, 0)) ? null : player;
     }
 
-    public WorldDataManager() {}
+    public StorageManager() {}
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
@@ -59,9 +59,9 @@ public class WorldDataManager extends PersistentState {
         this.markDirty();
     }
 
-    public static final Type<WorldDataManager> TYPE = new Type<>(
-            WorldDataManager::new,
-            (nbt, registryLookup) -> new WorldDataManager(nbt),
+    public static final Type<StorageManager> TYPE = new Type<>(
+            StorageManager::new,
+            (nbt, registryLookup) -> new StorageManager(nbt),
             LEVEL
     );
 }

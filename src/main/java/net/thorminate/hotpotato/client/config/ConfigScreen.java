@@ -8,11 +8,11 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.thorminate.hotpotato.client.HotPotatoClient;
 
-public class HotPotatoConfigScreen {
+public class ConfigScreen {
     public static Screen create(Screen parent) {
         if (!FabricLoader.getInstance().isModLoaded("cloth-config")) return parent;
 
-        HotPotatoConfig config = HotPotatoClient.config;
+        Config config = HotPotatoClient.config;
 
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
