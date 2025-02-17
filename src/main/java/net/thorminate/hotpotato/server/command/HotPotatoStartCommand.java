@@ -6,6 +6,12 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.thorminate.hotpotato.server.logic.HotPotatoTimer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Random;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
@@ -15,7 +21,7 @@ import static net.minecraft.command.argument.EntityArgumentType.player;
 import static net.minecraft.sound.SoundEvents.BLOCK_NOTE_BLOCK_PLING;
 import static net.minecraft.text.Text.translatable;
 import static net.minecraft.util.Formatting.*;
-import static net.thorminate.hotpotato.server.HotPotatoGame.*;
+import static net.thorminate.hotpotato.server.HotPotatoManager.*;
 
 public class HotPotatoStartCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -61,6 +67,35 @@ public class HotPotatoStartCommand {
             ServerPlayerEntity commandRunner = context.getSource().getPlayer();
             if (commandRunner != null) commandRunner.playSound(BLOCK_NOTE_BLOCK_PLING.value(), 1.0F, 1.0F);
             return SINGLE_SUCCESS;
-        } else return 0;  // Command executed successfully, return 1 (success code){
+        } else return 0;  // Command executed successfully, return 1 (success code)
+    }
+
+    private static boolean start(@NotNull MinecraftServer server, @Nullable ServerPlayerEntity player, Integer seconds) {
+        List<ServerPlayerEntity> players = server.getPlayerManager().getPlayerList();
+
+        if (players.isEmpty()) {
+            server.sendMessage(translatable("error.hot-potato.no_players"));
+            return false;
+        }
+
+        // If player is not provided, pick a random player.
+        if (player == null) {
+            player = players.get(new Random().nextInt(players.size()));
+            // If player is still null, something went wrong.
+            if (player == null) {
+                server.sendMessage(translatable("error.hot-potato.no_players"));
+                return false;
+            }
+        }
+
+        if (seconds <= 0) {
+            seconds = 30;
+        }
+
+        setCurrentHotPotato(server, player.getUuid());
+        setCountdown(server, seconds);
+
+        HotPotatoTimer.startTimer(server);
+        return true;
     }
 }

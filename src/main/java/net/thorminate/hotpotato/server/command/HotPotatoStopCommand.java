@@ -7,7 +7,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
-import net.thorminate.hotpotato.server.HotPotatoGame;
+import net.thorminate.hotpotato.server.HotPotatoManager;
+import net.thorminate.hotpotato.server.logic.HotPotatoTimer;
+import org.jetbrains.annotations.NotNull;
 
 import static net.minecraft.text.Text.translatable;
 
@@ -22,7 +24,7 @@ public class HotPotatoStopCommand {
     private static int stopGame(CommandContext<ServerCommandSource> context) {
         MinecraftServer server = context.getSource().getServer();
 
-        boolean gameStopStatus = HotPotatoGame.stop(server);
+        boolean gameStopStatus = stop(server);
 
         if (gameStopStatus) {
             context.getSource().sendFeedback(() -> translatable("commands.stop_hot_potato.success").formatted(Formatting.DARK_GREEN), true);
@@ -31,5 +33,13 @@ public class HotPotatoStopCommand {
             context.getSource().sendFeedback(() -> translatable("commands.stop_hot_potato.failure").formatted(Formatting.RED), true);
             return 0;  // Command executed successfully, return 1 (success code)
         }
+    }
+
+    public static boolean stop(@NotNull MinecraftServer server) {
+        HotPotatoTimer.stopTimer();
+        HotPotatoManager.setCurrentHotPotato(server, null);
+        HotPotatoManager.setCountdown(server, -1);
+        HotPotatoManager.syncWithClients(server);
+        return true;
     }
 }

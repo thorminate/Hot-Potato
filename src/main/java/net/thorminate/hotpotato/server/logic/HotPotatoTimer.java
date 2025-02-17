@@ -1,12 +1,17 @@
 package net.thorminate.hotpotato.server.logic;
 
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.thorminate.hotpotato.server.command.HotPotatoStopCommand;
+import org.jetbrains.annotations.NotNull;
 
 import static net.minecraft.util.Formatting.RED;
 import static net.minecraft.text.Text.translatable;
 import static net.thorminate.hotpotato.HotPotato.LOGGER;
-import static net.thorminate.hotpotato.server.HotPotatoGame.*;
+import static net.thorminate.hotpotato.server.HotPotatoManager.*;
 
 import java.util.concurrent.*;
 
@@ -34,16 +39,23 @@ public class HotPotatoTimer {
                     LOGGER.warn("The hot potato was not found! Make sure the player is online.");
                 }
                 server.getPlayerManager().broadcast(translatable("hot-potato.exploded").formatted(RED), true);
-                stop(server);
+                HotPotatoStopCommand.stop(server);
             }
 
             timeLeft--;
             setCountdown(server, timeLeft);
-            sync(server);
+            syncWithClients(server);
         }, 0, 1, TimeUnit.SECONDS);
     }
 
     public static void stopTimer() {
         if (SCHEDULER != null) SCHEDULER.shutdown();
+    }
+
+    private static void eliminate(@NotNull ServerPlayerEntity player, ServerWorld world) {
+        LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, player.getWorld());
+        lightning.setPosition(player.getPos());
+        player.getWorld().spawnEntity(lightning);
+        player.kill(world);
     }
 }
