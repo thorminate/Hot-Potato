@@ -1,29 +1,29 @@
 package net.thorminate.hotpotato.server.network;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 
 import static net.thorminate.hotpotato.HotPotato.MOD_ID;
 
-public record CountdownPayload(int countdown) implements CustomPayload {
-    public static final Identifier HOT_POTATO_PACKET_ID = Identifier.of(MOD_ID, "hot_potato_data_packet");
-    public static final PacketCodec<RegistryByteBuf, CountdownPayload> CODEC = PacketCodec.of(CountdownPayload::write, CountdownPayload::read);
+public record CountdownPayload(int countdown) implements CustomPacketPayload {
+    public static final Identifier PACKET_ID = Identifier.fromNamespaceAndPath(MOD_ID, "countdown_payload");
 
-    public static void write(CountdownPayload payload, RegistryByteBuf buf) {
-        buf.writeInt(payload.countdown);
-    }
+    public static final CustomPacketPayload.Type<CountdownPayload> TYPE =
+            new CustomPacketPayload.Type<>(PACKET_ID);
 
-    public static CountdownPayload read(RegistryByteBuf buf) {
-        int countdown = buf.readInt();
-        return new CountdownPayload(countdown);
-    }
-
-    public static final CustomPayload.Id<CountdownPayload> ID = new CustomPayload.Id<>(HOT_POTATO_PACKET_ID);
+    public static final StreamCodec<ByteBuf, CountdownPayload> CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.INT,             // codec for an int
+                    CountdownPayload::countdown,   // getter
+                    CountdownPayload::new          // constructor
+            );
 
     @Override
-    public Id<CountdownPayload> getId() {
-        return ID;
+    public CustomPacketPayload.@NonNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

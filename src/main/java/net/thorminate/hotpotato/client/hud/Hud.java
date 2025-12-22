@@ -1,14 +1,13 @@
 package net.thorminate.hotpotato.client.hud;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import static java.lang.Integer.parseInt;
 import static net.thorminate.hotpotato.HotPotato.MOD_ID;
@@ -19,15 +18,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-public class Hud implements HudRenderCallback {
-    private static final Identifier POTATO_1 = Identifier.of(MOD_ID, "textures/gui/potato_1.png");
-    private static final Identifier POTATO_2 = Identifier.of(MOD_ID, "textures/gui/potato_2.png");
-    private static final Identifier POTATO_3 = Identifier.of(MOD_ID, "textures/gui/potato_3.png");
-    private static final Identifier POTATO_4 = Identifier.of(MOD_ID, "textures/gui/potato_4.png");
-    private static final Identifier POTATO_5 = Identifier.of(MOD_ID, "textures/gui/potato_5.png");
-    private static final Identifier POTATO_6 = Identifier.of(MOD_ID, "textures/gui/potato_6.png");
-    private static final Identifier POTATO_7 = Identifier.of(MOD_ID, "textures/gui/potato_7.png");
-    private static final Identifier POTATO_8 = Identifier.of(MOD_ID, "textures/gui/potato_8.png");
+public class Hud implements HudElement {
+    private static final Identifier POTATO_1 = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/potato_1.png");
+    private static final Identifier POTATO_2 = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/potato_2.png");
+    private static final Identifier POTATO_3 = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/potato_3.png");
+    private static final Identifier POTATO_4 = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/potato_4.png");
+    private static final Identifier POTATO_5 = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/potato_5.png");
+    private static final Identifier POTATO_6 = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/potato_6.png");
+    private static final Identifier POTATO_7 = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/potato_7.png");
+    private static final Identifier POTATO_8 = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/potato_8.png");
     private final Random random = new Random();
 
     private static @NotNull Identifier getIdentifier(int countdown) {
@@ -54,12 +53,12 @@ public class Hud implements HudRenderCallback {
     }
 
     @Override
-    public void onHudRender(DrawContext context, RenderTickCounter renderTickCounter) {
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (HotPotatoClient.config.shouldRenderCountdown || HotPotatoClient.config.shouldRenderImage) {
             int countdown = StorageManagerClient.getCountdown();
             if (countdown <= 0) return;
 
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client.player == null) return;
 
             int textureHudPosX;
@@ -73,7 +72,7 @@ public class Hud implements HudRenderCallback {
             // Variables and logic for the text
             if (HotPotatoClient.config.shouldRenderImage) {
 
-                textureHudPosX = client.getWindow().getScaledWidth() - 64;
+                textureHudPosX = client.getWindow().getGuiScaledWidth() - 64;
                 textureHudPosY = 0;
 
                 if (countdown < 10) {
@@ -83,21 +82,16 @@ public class Hud implements HudRenderCallback {
                 }
 
                 // Variables and logic for the texture
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-
                 Identifier potatoTexture = getIdentifier(countdown);
 
-                context.drawTexture(
-                        RenderLayer::getGuiTextured,
+                guiGraphics.blit(
+                        RenderPipelines.GUI_TEXTURED,
                         potatoTexture,
                         textureHudPosX, textureHudPosY,
                         0, 0,
                         64, 64,
                         64, 64
                 );
-
-                RenderSystem.disableBlend();
             }
 
             if (HotPotatoClient.config.shouldRenderCountdown) {
@@ -112,41 +106,39 @@ public class Hud implements HudRenderCallback {
                     minutes = parseInt("0" + minutes);
                 }
 
-                Formatting formatting;
+                ChatFormatting formatting;
                 if (countdown < 60) {
-                    formatting = Formatting.RED;
+                    formatting = ChatFormatting.RED;
                 } else if (countdown < 300) {
-                    formatting = Formatting.YELLOW;
+                    formatting = ChatFormatting.YELLOW;
                 } else {
-                    formatting = Formatting.GREEN;
+                    formatting = ChatFormatting.GREEN;
                 }
 
-                Text text = Text.literal("\uD83D\uDD25" + minutes + "m " + seconds + "s").formatted(formatting);
+                Component text = Component.literal("\uD83D\uDD25" + minutes + "m " + seconds + "s").withStyle(formatting);
 
-                int textWidth = client.textRenderer.getWidth(text);
+                int textWidth = client.font.width(text);
 
                 if (HotPotatoClient.config.shouldRenderImage) {
 
                     int textPadding = (textureSize - textWidth) / 2;
 
-                    textHudPosX = client.getWindow().getScaledWidth() - textWidth - textPadding;
+                    textHudPosX = client.getWindow().getGuiScaledWidth() - textWidth - textPadding;
                     textHudPosY = 64;
                 } else {
-                    textHudPosX = client.getWindow().getScaledWidth() - textWidth - 5;
+                    textHudPosX = client.getWindow().getGuiScaledWidth() - textWidth - 5;
                     textHudPosY = 5;
                 }
 
-                context.drawText(
-                        client.textRenderer,
+                guiGraphics.drawString(
+                        client.font,
                         text,
                         textHudPosX, textHudPosY,
-                        0xFFFFFF,
+                        0xFFFFFFFF,
                         true
                 );
 
             }
         }
     }
-
-
 }

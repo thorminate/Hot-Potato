@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class Config {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "hot_potato.json");
+    private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "hot_potato_exploded.json");
 
     public boolean shouldRenderImage = true; // Default: Enabled
     public boolean shouldRenderCountdown = true; // Default: Enabled

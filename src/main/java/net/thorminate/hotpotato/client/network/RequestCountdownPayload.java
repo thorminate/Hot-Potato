@@ -1,23 +1,30 @@
 package net.thorminate.hotpotato.client.network;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 
 import static net.thorminate.hotpotato.HotPotato.MOD_ID;
 
-public record RequestCountdownPayload() implements CustomPayload {
-    public static final Identifier REQUEST_HOT_POTATO_PACKET_ID = Identifier.of(MOD_ID, "request_hot_potato_data_packet");
+public record RequestCountdownPayload() implements CustomPacketPayload {
+    public static final Identifier PACKET_ID =
+            Identifier.fromNamespaceAndPath(MOD_ID, "request_hot_potato_data_packet");
 
-    public static final RequestCountdownPayload INSTANCE = new RequestCountdownPayload();
+    public static final CustomPacketPayload.Type<RequestCountdownPayload> TYPE =
+            new CustomPacketPayload.Type<>(PACKET_ID);
 
-    public static final PacketCodec<RegistryByteBuf, RequestCountdownPayload> CODEC = PacketCodec.unit(INSTANCE);
-
-    public static final CustomPayload.Id<RequestCountdownPayload> ID = new CustomPayload.Id<>(REQUEST_HOT_POTATO_PACKET_ID);
+    // A codec for an empty packet: use the ZERO codec
+    public static final StreamCodec<ByteBuf, RequestCountdownPayload> CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.INT,
+                    buf -> 0,
+                    (dummy) -> new RequestCountdownPayload()
+            );
 
     @Override
-    public Id<? extends CustomPayload> getId() {
-        return ID;
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

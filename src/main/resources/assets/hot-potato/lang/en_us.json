@@ -6,7 +6,7 @@
   "config.hot-potato.shouldRenderPotato.tooltip": "Whether to render the hot potato image on the screen.",
   "config.hot-potato.shouldRenderCountdown.tooltip": "Whether to render the hot potato countdown on the screen.",
 
-  "error.hot-potato.no_players": "Unable to start hot potato, no players online.",
+  "error.hot-potato.no_players": "Unable to start hot potato, there are too few players.",
   "error.hot-potato.not_started": "Unable to resume hot potato, hot potato not started.",
   "commands.start_hot_potato.already_started": "Hot potato has already started. Run /stop-hot-potato to stop the game and re-run this command to start a new game.",
   "commands.stop_hot_potato.failure": "Unable to stop hot potato.",
@@ -15,5 +15,7 @@
   "commands.stop_hot_potato.success": "Hot potato stopped!",
   "hot-potato.exploded": "Hot potato exploded!",
   "hot-potato.cooldown_message": "Calm down! You're on cooldown!",
-  "hot-potato.you_are_hot_potato": "You have become the hot potato! Right click on another player to give them the hot potato."
+  "hot-potato.you_are_hot_potato": "You have become the hot potato! Right click on another player to give them the hot potato.",
+
+  "death.attack.hotPotatoExploded": "%1$s got burnt to a crisp by an abnormally hot potato."
 }

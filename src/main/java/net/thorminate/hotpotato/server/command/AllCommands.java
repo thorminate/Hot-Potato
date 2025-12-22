@@ -2,7 +2,7 @@ package net.thorminate.hotpotato.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 
 public class AllCommands {
     public static void register() {
@@ -12,7 +12,7 @@ public class AllCommands {
                 environment
         ) -> registerCommands(dispatcher));
     }
-    private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+    private static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         StartCmd.register(dispatcher);
         StopCmd.register(dispatcher);
     }

@@ -1,67 +1,60 @@
 package net.thorminate.hotpotato.server.storage;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.world.PersistentState;
-
-import static net.minecraft.datafixer.DataFixTypes.LEVEL;
-import static net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.UUID;
 
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
+import net.thorminate.hotpotato.HotPotato;
+import org.jspecify.annotations.Nullable;
 
-public class StorageManager extends PersistentState {
-    public static final String COUNTDOWN_KEY = "hot_potato_countdown";
-    public static final String PLAYER_KEY = "hot_potato_player";
-
+public class StorageManager extends SavedData {
     private UUID currentHotPotato;
     private int countdown;
 
-    public StorageManager(NbtCompound nbt) {
-        // First read the countdown and put it in the field to be stored in memory.
-        if (nbt.contains(COUNTDOWN_KEY)) this.countdown = nbt.getInt(COUNTDOWN_KEY);
-
-        // Then read the player UUID, if it exists return that, else return nullish UUID
-        UUID player = nbt.contains(PLAYER_KEY) ? nbt.getUuid(PLAYER_KEY) : new UUID(0, 0);
-
-        // Set the current hot potato to the player UUID, if it is nullish UUID, set it to null.
-        this.currentHotPotato = player.equals(new UUID(0, 0)) ? null : player;
-    }
-
     public StorageManager() {}
 
-    @Override
-    public NbtCompound writeNbt(NbtCompound nbt, WrapperLookup registryLookup) {
-        // If the current hot potato is null, return a nullish UUID instead.
-        UUID storedUuid = this.currentHotPotato != null ? this.currentHotPotato : new UUID(0, 0);
-
-        // Write the player UUID and the countdown into the NBT
-        nbt.putUuid(PLAYER_KEY, storedUuid);
-        nbt.putInt(COUNTDOWN_KEY, this.countdown);
-        return nbt;
+    public StorageManager(UUID currentHotPotato, int countdown) {
+        this.currentHotPotato = currentHotPotato;
+        this.countdown = countdown;
     }
 
     public UUID getCurrentHotPotato() {
-        return this.currentHotPotato;
+        return currentHotPotato;
     }
 
     public int getCountdown() {
-        return this.countdown;
+        return countdown;
     }
 
-    public void setCurrentHotPotato(@Nullable UUID playerUuid) {
-        this.currentHotPotato = playerUuid;
-        this.markDirty();
+    public void setCurrentHotPotato(@Nullable UUID currentHotPotato) {
+        this.currentHotPotato = currentHotPotato;
+        this.setDirty();
     }
 
-    public void setCountdown(int time) {
-        this.countdown = time;
-        this.markDirty();
+    public void setCountdown(int countdown) {
+        this.countdown = countdown;
+        this.setDirty();
     }
 
-    public static final Type<StorageManager> TYPE = new Type<>(
+    private static final Codec<StorageManager> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("countdown").forGetter(StorageManager::getCountdown),
+            Codec.STRING.fieldOf("currentHotPotato").forGetter(sm ->
+                    sm.getCurrentHotPotato() != null ? sm.getCurrentHotPotato().toString() : new UUID(0, 0).toString())
+    ).apply(instance, (countdown, uuidString) -> new StorageManager(UUID.fromString(uuidString).toString() == new UUID(0, 0).toString() ? UUID.fromString(uuidString) : null, countdown)));
+
+    public static final SavedDataType<StorageManager> TYPE = new SavedDataType<>(
+            "hot_potato_storage",
             StorageManager::new,
-            (nbt, registryLookup) -> new StorageManager(nbt),
-            LEVEL
+            CODEC,
+            DataFixTypes.SAVED_DATA_COMMAND_STORAGE
     );
+
+    public static StorageManager get(ServerLevel world) {
+        return world.getDataStorage().computeIfAbsent(TYPE);
+    }
 }
