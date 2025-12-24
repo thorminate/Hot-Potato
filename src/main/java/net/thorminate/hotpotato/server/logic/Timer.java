@@ -1,81 +1,85 @@
 package net.thorminate.hotpotato.server.logic;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.LightningBolt;
-import net.thorminate.hotpotato.HotPotato;
-import net.thorminate.hotpotato.server.command.StopCmd;
-import net.minecraft.world.entity.EntityType;
-import org.jetbrains.annotations.NotNull;
+
+import net.thorminate.hotpotato.server.HotPotatoManager;
+import net.thorminate.hotpotato.server.command.MainCmd;
 
 import static net.minecraft.network.chat.Component.translatable;
-import static net.thorminate.hotpotato.HotPotato.LOGGER;
 import static net.thorminate.hotpotato.server.HotPotatoManager.*;
 
 import java.util.concurrent.*;
 
-public class Timer {
-    private static ScheduledExecutorService SCHEDULER;
-    private static ServerPlayer currentHotPotato;
-    private static int timeLeft = -1;
+public final class Timer {
 
-    private static final ResourceKey<DamageType> HOT_POTATO_EXPLODED = ResourceKey.create(
-            Registries.DAMAGE_TYPE,
-            Identifier.fromNamespaceAndPath(HotPotato.MOD_ID, "hot_potato_exploded")
-    );
+    private static int ticksRemaining = -1;
+    private static int lastSecondSent = -1;
+    private static boolean running = false;
+
+    private Timer() {}
 
     public static void startTimer(MinecraftServer server) {
-        if (SCHEDULER != null) SCHEDULER.shutdown();
-        SCHEDULER = Executors.newSingleThreadScheduledExecutor(runnable -> {
-            Thread thread = new Thread(runnable);
-            thread.setName("Hot-Potato-Timer");
-            return thread;
-        });
+        if (running) return;
 
-        SCHEDULER.scheduleAtFixedRate(() -> {
-            timeLeft = getCountdown(server);
-            currentHotPotato = server.getPlayerList().getPlayer(getCurrentHotPotato(server));
-
-            if (timeLeft <= 1) {
-                if (currentHotPotato != null) {
-                    eliminate(currentHotPotato, server.getLevel(currentHotPotato.level().dimension()));
-                } else {
-                    LOGGER.warn("The hot potato was not found! Make sure the player is online.");
-                }
-                server.getPlayerList().broadcastSystemMessage(translatable("hot-potato.exploded").withStyle(ChatFormatting.RED), true);
-                StopCmd.stop(server);
-            }
-
-            timeLeft--;
-            setCountdown(server, timeLeft);
-            syncWithClients(server);
-        }, 0, 1, TimeUnit.SECONDS);
+        ticksRemaining = getCountdown(server) * 20;
+        lastSecondSent = -1;
+        running = true;
     }
 
     public static void stopTimer() {
-        if (SCHEDULER != null) SCHEDULER.shutdown();
+        running = false;
+        ticksRemaining = -1;
+        lastSecondSent = -1;
     }
 
-    private static void eliminate(@NotNull ServerPlayer player, ServerLevel world) {
-        // Spawn lightning bolt
-        LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, player.level());
-        lightning.setPos(player.position());
-        player.level().addFreshEntity(lightning);
+    public static void register() {
+        ServerTickEvents.END_SERVER_TICK.register(Timer::tick);
+    }
 
-        // Deal damage
-        DamageSource source = new DamageSource(
-                player.level().registryAccess()
-                        .lookupOrThrow(Registries.DAMAGE_TYPE)
-                        .get(HOT_POTATO_EXPLODED.identifier()).get()
-        );
+    private static void tick(MinecraftServer server) {
+        if (!running || ticksRemaining < 0) return;
 
-        player.hurtServer(world, source, 1_000_000.0f);
+        ticksRemaining--;
+
+        int secondsLeft = ticksRemaining / 20;
+
+        // Send packets only when the visible second changes
+        if (secondsLeft != lastSecondSent) {
+            lastSecondSent = secondsLeft;
+            setCountdown(server, secondsLeft);
+            syncWithClients(server);
+        }
+
+        if (ticksRemaining > 0) return;
+
+        ServerPlayer player = server.getPlayerList()
+                .getPlayer(getCurrentHotPotato(server));
+
+        if (player != null) {
+            HotPotatoManager.explode(player);
+
+            server.getPlayerList().broadcastSystemMessage(
+                    translatable("hot-potato.exploded").withStyle(ChatFormatting.RED),
+                    true
+            );
+        } else {
+            doom(server, getCurrentHotPotato(server));
+
+            server.getPlayerList().broadcastSystemMessage(
+                    translatable("hot-potato.player_is_doomed").withStyle(ChatFormatting.RED),
+                    true
+            );
+        }
+
+
+
+
+
+        MainCmd.stop(server, false);
+        stopTimer();
     }
 }

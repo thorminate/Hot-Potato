@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.thorminate.hotpotato.server.command.AllCommands;
 import net.thorminate.hotpotato.server.logic.LifecycleEvents;
 import net.thorminate.hotpotato.server.logic.PlayerEvents;
+import net.thorminate.hotpotato.server.logic.Timer;
 import net.thorminate.hotpotato.server.network.Networking;
 import org.slf4j.Logger;
 
@@ -20,5 +21,6 @@ public class HotPotato implements ModInitializer {
 		Networking.register();
 		LifecycleEvents.register();
 		PlayerEvents.register();
+		Timer.register();
 	}
 }

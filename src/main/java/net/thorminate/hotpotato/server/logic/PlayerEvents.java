@@ -1,16 +1,21 @@
 package net.thorminate.hotpotato.server.logic;
 
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import static net.minecraft.network.chat.Component.translatable;
 import static net.thorminate.hotpotato.server.HotPotatoManager.*;
@@ -46,7 +51,14 @@ public class PlayerEvents {
             return InteractionResult.PASS;
         }
 
-
+        if (entity instanceof ServerPlayer target) {
+            if (isShieldBlocking(target, player)) {
+                damageShield(target);
+                player.swing(player.getUsedItemHand(), true);
+                CooldownManager.setCooldown();
+                return InteractionResult.SUCCESS;
+            }
+        }
 
         serverLevel.sendParticles(ParticleTypes.FLAME, entity.getX(), entity.getY(), entity.getZ(), 10, 0.3, 0.3, 0.3, 0.5);
         serverLevel.playSound(entity, entity.blockPosition(), SoundEvents.SILVERFISH_STEP, SoundSource.MASTER);
@@ -57,5 +69,44 @@ public class PlayerEvents {
         CooldownManager.setCooldown();
 
         return InteractionResult.SUCCESS;
+    }
+
+    private static boolean isShieldBlocking(ServerPlayer target, Player attacker) {
+        if (!target.isUsingItem()) return false;
+
+        ItemStack activeItem = target.getUseItem();
+        if (!activeItem.is(Items.SHIELD)) return false;
+
+        // Direction from target → attacker
+        Vec3 toAttacker = attacker.position().subtract(target.position()).normalize();
+
+        // Target's look direction
+        Vec3 look = target.getLookAngle();
+
+        // Dot product > 0 means attacker is in front
+        return look.dot(toAttacker) > 0.0D;
+    }
+
+    private static void damageShield(ServerPlayer target) {
+        ItemStack shield = target.getUseItem();
+
+        shield.hurtAndBreak(
+                1, // durability damage
+                target,
+                target.getUsedItemHand()
+        );
+
+        target.level().playSound(
+                null,
+                target.blockPosition(),
+                SoundEvents.SHIELD_BLOCK.value(),
+                SoundSource.PLAYERS,
+                1.0F,
+                0.8F
+        );
+
+        target.getCooldowns().addCooldown(shield, 5 * 20);
+
+        target.stopUsingItem();
     }
 }

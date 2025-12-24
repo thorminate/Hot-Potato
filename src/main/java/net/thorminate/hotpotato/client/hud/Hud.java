@@ -1,6 +1,7 @@
 package net.thorminate.hotpotato.client.hud;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -15,6 +16,7 @@ import static net.thorminate.hotpotato.HotPotato.MOD_ID;
 import net.thorminate.hotpotato.client.HotPotatoClient;
 import net.thorminate.hotpotato.client.storage.StorageManagerClient;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Random;
 
@@ -53,7 +55,7 @@ public class Hud implements HudElement {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public void render(@NonNull GuiGraphics guiGraphics, @NonNull DeltaTracker deltaTracker) {
         if (HotPotatoClient.config.shouldRenderCountdown || HotPotatoClient.config.shouldRenderImage) {
             int countdown = StorageManagerClient.getCountdown();
             if (countdown <= 0) return;

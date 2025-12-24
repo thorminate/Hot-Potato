@@ -1,10 +1,12 @@
 package net.thorminate.hotpotato.client.network;
 
 import io.netty.buffer.ByteBuf;
+
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 
 import static net.thorminate.hotpotato.HotPotato.MOD_ID;
 
@@ -24,7 +26,7 @@ public record RequestCountdownPayload() implements CustomPacketPayload {
             );
 
     @Override
-    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    public CustomPacketPayload.@NonNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

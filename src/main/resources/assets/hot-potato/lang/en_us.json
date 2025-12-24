@@ -9,13 +9,17 @@
   "error.hot-potato.no_players": "Unable to start hot potato, there are too few players.",
   "error.hot-potato.not_started": "Unable to resume hot potato, hot potato not started.",
   "commands.start_hot_potato.already_started": "Hot potato has already started. Run /stop-hot-potato to stop the game and re-run this command to start a new game.",
+  "commands.start_hot_potato.countdown_already_started": "Countdown already started!",
   "commands.stop_hot_potato.failure": "Unable to stop hot potato.",
 
   "commands.start_hot_potato.success": "Hot potato started!",
   "commands.stop_hot_potato.success": "Hot potato stopped!",
   "hot-potato.exploded": "Hot potato exploded!",
+  "hot-potato.player_is_doomed": "The player left the game with the hot potato. That player is now doomed.",
   "hot-potato.cooldown_message": "Calm down! You're on cooldown!",
   "hot-potato.you_are_hot_potato": "You have become the hot potato! Right click on another player to give them the hot potato.",
+  "hot-potato.title": "Hot Potato!",
+  "hot-potato.safe": "Safe!",
 
-  "death.attack.hotPotatoExploded": "%1$s got burnt to a crisp by an abnormally hot potato."
+  "death.attack.hotPotatoExploded": "The hot potato has exploded, pulverizing %1$s in the process."
 }

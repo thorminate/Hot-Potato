@@ -1,6 +1,7 @@
 package net.thorminate.hotpotato.client;
 
 import net.fabricmc.api.ClientModInitializer;
+
 import net.thorminate.hotpotato.client.config.Config;
 import net.thorminate.hotpotato.client.hud.AllHudClient;
 import net.thorminate.hotpotato.client.logic.LifecycleEventsClient;

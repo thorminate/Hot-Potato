@@ -2,6 +2,7 @@ package net.thorminate.hotpotato.client.logic;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+
 import net.thorminate.hotpotato.client.network.RequestCountdownPayload;
 import net.thorminate.hotpotato.client.storage.StorageManagerClient;
 
